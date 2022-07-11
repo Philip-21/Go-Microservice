@@ -8,7 +8,7 @@ import (
 	"github.com/go-chi/cors"
 )
 
-func routes() http.Handler {
+func (app *Config) routes() http.Handler {
 	mux := chi.NewRouter()
 
 	//cors is an http header that defines which origin a browser a browser is permitted to load resources
