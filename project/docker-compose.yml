@@ -1,0 +1,16 @@
+version: '3'
+
+#declare the list of services we want to launch
+services:
+ 
+
+  broker-service:
+    build: #build the image from the golang source 
+      context: ./../broker-service        #declares its dir
+      dockerfile: ./../broker-service/broker-service.dockerfile   #get the docker file from the broker-service dir
+    restart: always #restart incase it dies 
+    ports:
+      - "8080:80" #mappin the port 
+    deploy:
+      mode: replicated
+      replicas: 1  #listens to 1 port only 
