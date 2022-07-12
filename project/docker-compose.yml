@@ -10,7 +10,7 @@ services:
       dockerfile: ./../broker-service/broker-service.dockerfile   #get the docker file from the broker-service dir
     restart: always #restart incase it dies 
     ports:
-      - "8080:80" #mappin the port 
+      - "8080:80" #mappin the port , tells docker to listen on port 8080 on  your local machine, and forward it to port 80 inside docker
     deploy:
       mode: replicated
       replicas: 1  #listens to 1 port only 
