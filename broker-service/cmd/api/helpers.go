@@ -20,7 +20,7 @@ func (app *Config) ReadJSON(w http.ResponseWriter, r *http.Request, data any) er
 
 	//request body is executed on the serverside
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
-	//unpacks data from json to struct
+	//unpack data from json to struct
 	dec := json.NewDecoder(r.Body)
 	err := dec.Decode(data)
 	if err != nil {
