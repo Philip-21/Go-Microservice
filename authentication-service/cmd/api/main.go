@@ -1,7 +1,7 @@
 package main
 
 import (
-	"authentication/data"
+	"authentication/database"
 	"database/sql"
 	"fmt"
 	"log"
@@ -12,7 +12,7 @@ const webPort = "80"
 
 type Config struct {
 	DB     *sql.DB
-	Models data.Models
+	Models database.Models
 }
 
 func main() {
@@ -20,9 +20,16 @@ func main() {
 	log.Println("Starting authentication service")
 
 	// connect to db
+	conn := database.ConnectToDB()
+	if conn == nil {
+		log.Panic("Cant connect to Postres!")
+	}
 
 	// set up config
-	app := Config{}
+	app := Config{
+		DB:     conn,
+		Models: database.New(conn),
+	}
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),
