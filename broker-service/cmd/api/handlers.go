@@ -4,6 +4,7 @@ import (
 	"net/http"
 )
 
+// the homepage handler for the frontend
 func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
 	payload := jsonResponse{
 		Error:   false,

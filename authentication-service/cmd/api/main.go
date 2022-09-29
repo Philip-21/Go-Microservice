@@ -22,8 +22,9 @@ func main() {
 	// connect to db
 	conn := database.ConnectToDB()
 	if conn == nil {
-		log.Panic("Cant connect to Postres!")
+		log.Panic("Cant connect to Postgres!")
 	}
+	log.Println("connected to db ")
 
 	// set up config
 	app := Config{

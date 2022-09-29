@@ -6,18 +6,18 @@ import (
 	"os"
 	"time"
 
-	_"github.com/jackc/pgx/v4"
 	_ "github.com/jackc/pgconn"
+	_ "github.com/jackc/pgx/v4"
 	_ "github.com/jackc/pgx/v4/stdlib"
-
 )
 
+// opens db connection
 func OpenDB(dsn string) (*sql.DB, error) {
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {
 		return nil, err
 	}
-	//verifies a connection to the database is still alive, establishing a connection if necessary.
+	//verifies if a connection to the database is still alive, establishing a connection if necessary.
 	err = db.Ping()
 	if err != nil {
 		return nil, err
@@ -27,7 +27,7 @@ func OpenDB(dsn string) (*sql.DB, error) {
 
 var counts int64
 
-//
+// connects to the database properly
 func ConnectToDB() *sql.DB {
 	dsn := os.Getenv("DSN")
 	//an infinite for loop to connect to the database
