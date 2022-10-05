@@ -20,6 +20,7 @@ RUN CGO_ENABLE=0 go build -o brokerApp ./cmd/api
 #run the chmod command and add the executable flag
 RUN chmod +x /app/brokerApp
 
+
 #----------The Main running image--------
 
 #Build a tiny docker image 
@@ -32,6 +33,7 @@ RUN mkdir /app
 #copying file from the builder stage, the files are copied to /app 
 COPY --from=builder /app/brokerApp /app
 
-CMD [ "/app/brokerApp" ]
+#it build te applicatio into the broker app
+CMD [ "/app/brokerApp" ] 
 
 #run docker compose -d on terminal 

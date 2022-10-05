@@ -36,7 +36,9 @@ services:
   postgres:
     image: 'postgres:14.2'
     ports:
-      - "5432:5432"
+      - "5432:5432" #5432 on the machine : 5432 in the docker container
+    
+    restart: "always"  
     deploy:
       mode: replicated
       replicas: 1
@@ -44,5 +46,6 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: users
+    #volumes set for data to persist
     volumes:
       - ./db-data/postgres/:/var/lib/postgresql/data/     
