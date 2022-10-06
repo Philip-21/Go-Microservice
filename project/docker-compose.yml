@@ -44,8 +44,8 @@ services:
       replicas: 1
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: users
+      POSTGRES_PASSWORD: philippians
+      POSTGRES_DB: postgres
     #volumes set for data to persist
     volumes:
       - ./db-data/postgres/:/var/lib/postgresql/data/     
