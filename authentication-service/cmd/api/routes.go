@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 )
 
@@ -19,6 +20,9 @@ func (app *Config) Routes() http.Handler {
 		AllowCredentials: true,
 		MaxAge:           300,
 	}))
+	//making sure the service responds to netwrok request
+	router.Use(middleware.Heartbeat("/ping"))
 
+	router.Post("/authentication", app.Authentication)
 	return router
 }

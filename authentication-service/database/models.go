@@ -25,7 +25,7 @@ type User struct {
 // in this type is available to us throughout the application, anywhere that the
 // app variable is used, provided that the model is also added in the New function.
 type Models struct {
-	user User
+	User User //using User 2 define the object to be used in the db reciver func
 }
 
 // New is the function used to create an instance of the data package by connecting to the db.
@@ -34,6 +34,6 @@ func New(dbPool *sql.DB) Models {
 	db = dbPool
 
 	return Models{
-		user: User{},
+		User: User{},
 	}
 }
