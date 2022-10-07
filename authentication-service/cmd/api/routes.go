@@ -23,6 +23,6 @@ func (app *Config) Routes() http.Handler {
 	//making sure the service responds to netwrok request
 	router.Use(middleware.Heartbeat("/ping"))
 
-	router.Post("/authentication", app.Authentication)
+	router.Post("/authenticate", app.Authenticate)
 	return router
 }
