@@ -90,7 +90,7 @@ func (app *Config) Authenticate(w http.ResponseWriter, a AuthPayload) {
 
 	var payload jsonResponse
 	payload.Error = false
-	payload.Message = "Authenticated"
+	payload.Message = "Authenticated!"
 	payload.Data = jsonFromService.Data
 
 	///writes the actual data from the service
