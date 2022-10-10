@@ -34,7 +34,7 @@ services:
 
 
   postgres:
-    image: 'postgres:14.2'
+    image: 'postgres:14.0'
     ports:
       - "5432:5432" #5432 on the machine : 5432 in the docker container
     
