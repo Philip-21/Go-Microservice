@@ -26,15 +26,15 @@ services:
     deploy:
       mode: replicated
       replicas: 1
-    environment:
-      DSN: "host=postgres port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
+    environment: #the env variable will be called in the auth service & must be the same as the postgres-service
+      DSN: "host=localhost port=5432 user=postgres password=philippians dbname=postgres sslmode=disable timezone=UTC connect_timeout=5"
 
 
 
 
 
   postgres:
-    image: 'postgres:14.0'
+    image: 'postgres:14.2'
     ports:
       - "5432:5432" #5432 on the machine : 5432 in the docker container
     
