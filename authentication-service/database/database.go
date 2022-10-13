@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+
 	"errors"
 	"log"
 	"time"
@@ -24,8 +25,10 @@ func (u *User) GetAll() ([]*User, error) {
 	defer rows.Close()
 
 	var users []*User
+
 	//Next prepares the next result row for reading with the Scan method. It returns true on success,
 	// or false if there is no next result row or an error happened while preparing it.
+
 	for rows.Next() {
 		var user User
 		err := rows.Scan(
