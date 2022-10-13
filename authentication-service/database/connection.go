@@ -29,7 +29,7 @@ var counts int64
 
 // connects to the database properly
 func ConnectToDB() *sql.DB {
-	dsn := os.Getenv("DSN")
+	dsn := os.Getenv("DSN") //DSN is gotten from the docker compose yml file in auth service
 	//an infinite for loop to connect to the database
 	for {
 		connection, err := OpenDB(dsn)

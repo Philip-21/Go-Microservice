@@ -26,25 +26,8 @@ func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
 	_ = app.Writejson(w, http.StatusOK, payload)
 }
 
-// this handler handles all request
-func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
-	var requestPayload RequestPayload
-	err := app.ReadJSON(w, r, &requestPayload)
-	if err != nil {
-		app.ErrorJSON(w, err)
-		return
-	}
-
-	//taking action on the contents being received
-	switch requestPayload.Action {
-	case "auth":
-		app.Authenticate(w, requestPayload.Auth)
-	default:
-		app.ErrorJSON(w, errors.New("unknown Action"))
-	}
-}
-
-func (app *Config) Authenticate(w http.ResponseWriter, a AuthPayload) {
+// authenticate calls the authentication microservice and sends back the appropriate response
+func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 	//create some json to send to the Authentication Microservice
 	jsonData, _ := json.MarshalIndent(a, "", "\t")
 
@@ -96,4 +79,22 @@ func (app *Config) Authenticate(w http.ResponseWriter, a AuthPayload) {
 	///writes the actual data from the service
 	app.Writejson(w, http.StatusAccepted, payload)
 
+}
+
+// this handler handles all request
+func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
+	var requestPayload RequestPayload
+	err := app.ReadJSON(w, r, &requestPayload)
+	if err != nil {
+		app.ErrorJSON(w, err)
+		return
+	}
+
+	//taking action on the contents being received
+	switch requestPayload.Action {
+	case "auth":
+		app.authenticate(w, requestPayload.Auth)
+	default:
+		app.ErrorJSON(w, errors.New("unknown Action"))
+	}
 }

@@ -27,7 +27,7 @@ services:
       mode: replicated
       replicas: 1
     environment: #the env variable will be called in the auth service & must be the same as the postgres-service
-      DSN: "host=localhost port=5432 user=postgres password=philippians dbname=postgres sslmode=disable timezone=UTC connect_timeout=5"
+      DSN: "host=postgres port=5432 user=postgres password=philippians dbname=postgres sslmode=disable timezone=UTC connect_timeout=5"
 
 
 
