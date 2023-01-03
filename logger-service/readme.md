@@ -1,0 +1,1 @@
+Data directory holds our data models for communicating with the mongo database
