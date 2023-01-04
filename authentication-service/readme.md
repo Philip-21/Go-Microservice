@@ -1,3 +1,4 @@
+The Service that authenticates a user 
 
 - Uses Postgres as its database
 - Uses [jackc](github.com/jackc/pgx/v4) as its postgres driver

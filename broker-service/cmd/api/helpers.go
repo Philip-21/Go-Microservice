@@ -7,13 +7,14 @@ import (
 	"net/http"
 )
 
+// the output diplayed in the frontend
 type jsonResponse struct {
 	Error   bool   `json:"error"`
 	Message string `json:"message"`
 	Data    any    `json:"data,omitempty"` //used any data type  instead of an interface , cause im parsin  insmall values
 }
 
-//Read json
+// Read json
 func (app *Config) ReadJSON(w http.ResponseWriter, r *http.Request, data any) error {
 	//make limitation of the size of uploaded json file
 	maxBytes := 1048576 //one megabyte
@@ -34,7 +35,7 @@ func (app *Config) ReadJSON(w http.ResponseWriter, r *http.Request, data any) er
 
 }
 
-//Write Json
+// Write Json
 func (app *Config) Writejson(w http.ResponseWriter, status int, data any, headers ...http.Header) error {
 	out, err := json.Marshal(data)
 	if err != nil {
@@ -54,7 +55,7 @@ func (app *Config) Writejson(w http.ResponseWriter, status int, data any, header
 	return nil
 }
 
-//error json
+// error json
 func (app *Config) ErrorJSON(w http.ResponseWriter, err error, status ...int) error {
 	statusCode := http.StatusBadRequest
 	//check to see if status has been specified

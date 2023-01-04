@@ -48,21 +48,33 @@ func main() {
 		Models: data.New(client),
 	}
 	// start web server
-	go app.serve()
-}
 
-// this func starts a web server
-func (app *Config) serve() {
+	//go app.serve()
+	log.Println("Starting Service on port", webPort)
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),
 		Handler: app.routes(),
 	}
 
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	if err != nil {
 		log.Panic()
 	}
+
 }
+
+// this func starts a web server
+// func (app *Config) serve() {
+// 	srv := &http.Server{
+// 		Addr:    fmt.Sprintf(":%s", webPort),
+// 		Handler: app.routes(),
+// 	}
+
+// 	err := srv.ListenAndServe()
+// 	if err != nil {
+// 		log.Panic()
+// 	}
+// }
 
 func connectToMongo() (*mongo.Client, error) {
 	//create conection options
@@ -79,6 +91,7 @@ func connectToMongo() (*mongo.Client, error) {
 		log.Println("Error Connecting:", err)
 		return nil, err
 	}
+	log.Println("Connected to Mongo")
 	return c, nil
 
 }
