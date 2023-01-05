@@ -8,6 +8,8 @@
                 <hr>
                 <a id="brokerBtn" class="btn btn-outline-secondary" href="javascript:void(0);">Test Broker</a>
                 <a id="authBrokerBtn" class="btn btn-outline-secondary" href="javascript:void(0);">Test Auth</a>
+                <a id="logBtn" class="btn btn-outline-secondary" href="javascript:void(0);">Test Log</a>
+
 
                 <div id="output" class="mt-5" style="outline: 1px solid silver; padding: 2em;">
                     <span class="text-muted">Output shows here...</span>
@@ -69,7 +71,7 @@
            //reference to auth button
         let authBrokerBtn = document.getElementById("authBrokerBtn")
 
-        authBrokerBtn.addEventListener("click", function() {
+        authBrokerBtn.addEventListener("click", function() {//event listener listens or clicks and executes the function
             const payload ={
                 action:"auth", //what we expecting on the backend
                 //data we are parsing
@@ -107,6 +109,40 @@
                 output.innerHTML += "<br><br>Eror: " + error;
             })
 
+        })
+        let logBtn = document.getElementById("logBtn");
+        logBtn.addEventListener("click", function() {
+            const payload = {
+                action: "log",
+                log: { //the log entry
+                    name: "event",
+                    data: "Some kind of data",
+                }
+            }
+            //Post headers
+            const headers = new Headers();
+            headers.append("Content-Type", "application/json");
+    
+            const body = {
+                method: "POST",
+                body: JSON.stringify(payload),
+                headers: headers,
+            }
+    
+            fetch("http:\/\/localhost:8080/handle", body)
+            .then((response) => response.json())
+            .then((data) => {
+                sent.innerHTML = JSON.stringify(payload, undefined, 4);
+                received.innerHTML = JSON.stringify(data, undefined, 4);
+                if (data.error) {
+                    output.innerHTML += `<br><strong>Error:</strong> ${data.message}`;
+                } else {
+                    output.innerHTML += `<br><strong>Response from broker service</strong>: ${data.message}`;
+                }
+            })
+            .catch((error) => {
+                output.innerHTML += "<br><br>Eror: " + error;
+            })        
         })
     </script>
 {{end}}

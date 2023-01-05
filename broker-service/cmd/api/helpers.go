@@ -7,13 +7,6 @@ import (
 	"net/http"
 )
 
-// the output diplayed in the frontend
-type jsonResponse struct {
-	Error   bool   `json:"error"`
-	Message string `json:"message"`
-	Data    any    `json:"data,omitempty"` //used any data type  instead of an interface , cause im parsin  insmall values
-}
-
 // Read json
 func (app *Config) ReadJSON(w http.ResponseWriter, r *http.Request, data any) error {
 	//make limitation of the size of uploaded json file

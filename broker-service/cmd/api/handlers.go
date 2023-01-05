@@ -23,6 +23,13 @@ type LogPayload struct {
 	Data string `json:"data"`
 }
 
+// the output diplayed in the frontend
+type jsonResponse struct {
+	Error   bool   `json:"error"`
+	Message string `json:"message"`
+	Data    any    `json:"data,omitempty"` //used any data type  instead of an interface , cause im parsin  insmall values
+}
+
 // the homepage handler for the frontend
 func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
 	payload := jsonResponse{
