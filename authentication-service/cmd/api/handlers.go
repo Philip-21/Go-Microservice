@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func (app *Config) authenticate(w http.ResponseWriter, r *http.Request) {
+func (app *Config) Authenticate(w http.ResponseWriter, r *http.Request) {
 	//declare a variable that haa the same tags with the json
 	var requestPayload struct {
 		Email    string `json:"email"`
