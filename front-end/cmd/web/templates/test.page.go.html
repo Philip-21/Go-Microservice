@@ -35,14 +35,12 @@
 
 {{define "js"}}
     <script>
-        //reference to broker button
+        //reference to BROKER BUTTON
         let brokerBtn = document.getElementById("brokerBtn");
        
         let output =document.getElementById("output");
         let sent = document.getElementById("payload");
         let received = document.getElementById("received");
-
-       
 
         //a listener on the broker button that listens for clicks
         brokerBtn.addEventListener("click", function(){
@@ -51,6 +49,7 @@
                 //post an empty body
                 method: 'POST',
             }
+         
             fetch("http:\/\/localhost:8080", body) //a standard way of parsin a url in go templates
             .then((response) => response.json()) //convert response to json
             .then((data) => {
@@ -68,7 +67,7 @@
         })
 
        
-           //reference to auth button
+           //reference to AUTH button
         let authBrokerBtn = document.getElementById("authBrokerBtn")
 
         authBrokerBtn.addEventListener("click", function() {//event listener listens or clicks and executes the function
@@ -110,6 +109,7 @@
             })
 
         })
+        //Reference to LOGGED button
         let logBtn = document.getElementById("logBtn");
         logBtn.addEventListener("click", function() {
             const payload = {

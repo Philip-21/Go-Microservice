@@ -124,7 +124,7 @@ func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
 	app.Writejson(w, http.StatusAccepted, payload)
 }
 
-// this handler handles all request
+// this handler handles all request to display in the front-end and called by the javascript
 func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	var requestPayload RequestPayload
 	err := app.ReadJSON(w, r, &requestPayload)
