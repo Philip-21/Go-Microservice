@@ -1,4 +1,4 @@
-package data
+package database
 
 import (
 	"context"
@@ -83,13 +83,11 @@ func (l *LogEntry) GetOne(id string) (*LogEntry, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	var entry LogEntry
 	err = collection.FindOne(ctx, bson.M{"_id": docID}).Decode(&entry)
 	if err != nil {
 		return nil, err
 	}
-
 	return &entry, nil
 }
 

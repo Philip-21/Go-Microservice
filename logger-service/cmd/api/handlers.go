@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log-service/data"
+	"log-service/database"
 	"net/http"
 )
 
@@ -16,7 +16,7 @@ func (app *Config) WriteLog(w http.ResponseWriter, r *http.Request) {
 	_ = app.readJSON(w, r, &requestPayload)
 
 	// insert data
-	event := data.LogEntry{
+	event := database.LogEntry{
 		Name: requestPayload.Name,
 		Data: requestPayload.Data,
 	}
