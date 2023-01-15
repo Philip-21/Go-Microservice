@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"log-service/data"
+	"log-service/database"
 	"net/http"
 	"time"
 
@@ -22,7 +22,7 @@ const (
 var client *mongo.Client
 
 type Config struct {
-	Models data.Models
+	Models database.Models
 }
 
 func main() {
@@ -45,7 +45,7 @@ func main() {
 	}()
 
 	app := Config{
-		Models: data.New(client),
+		Models: database.New(client),
 	}
 	// start web server
 
