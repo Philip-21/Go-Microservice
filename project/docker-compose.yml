@@ -38,7 +38,7 @@ services:
       DSN: "host=postgres port=5432 user=postgres password=philippians dbname=postgres sslmode=disable timezone=UTC connect_timeout=5"
 
 
-  mailer-service: 
+  mail-service: 
     build: 
      context: ./../mail-service
      dockerfile: ./../mail-service/mail-service.dockerfile

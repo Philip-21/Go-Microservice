@@ -5,6 +5,7 @@ package main
 import (
 	"bytes"
 	"html/template"
+	"log"
 	"time"
 
 	"github.com/vanng822/go-premailer/premailer" // premailer converts css formats easily to email
@@ -49,12 +50,16 @@ func (m *Mail) SendSMTPMessage(msg Message) error {
 
 	formattedMessage, err := m.buildHTMLMessage(msg)
 	if err != nil {
+		log.Println(err)
 		return err
+
 	}
 	//palin text version of message
 	plainMessage, err := m.buildPlainTextMessage(msg)
 	if err != nil {
+		log.Println(err)
 		return err
+
 	}
 	//create a server
 	server := mail.NewSMTPClient()
@@ -69,7 +74,9 @@ func (m *Mail) SendSMTPMessage(msg Message) error {
 	//establish client
 	smtpClient, err := server.Connect()
 	if err != nil {
+		log.Println(err)
 		return err
+
 	}
 	//create email message
 	email := mail.NewMSG()
@@ -91,7 +98,9 @@ func (m *Mail) SendSMTPMessage(msg Message) error {
 	//sending the mail
 	err = email.Send(smtpClient)
 	if err != nil {
+		log.Println(err)
 		return err
+
 	}
 	return nil
 }
@@ -101,7 +110,9 @@ func (m *Mail) buildPlainTextMessage(msg Message) (string, error) {
 	//calling the html template
 	t, err := template.New("email-plain").ParseFiles(templateToRender)
 	if err != nil {
+		log.Println(err)
 		return "", err
+
 	}
 	//store templates in temporary memory
 	var tpl bytes.Buffer
@@ -110,7 +121,9 @@ func (m *Mail) buildPlainTextMessage(msg Message) (string, error) {
 	// specified data object and writes the output to wr(io.writer= &tpl)
 	err = t.ExecuteTemplate(&tpl, "body", msg.DataMap)
 	if err != nil {
+		log.Println(err)
 		return "", err
+
 	}
 	plainMessage := tpl.String()
 
@@ -122,7 +135,9 @@ func (m *Mail) buildHTMLMessage(msg Message) (string, error) {
 	//calling the html template
 	t, err := template.New("email-html").ParseFiles(templateToRender)
 	if err != nil {
+		log.Println(err)
 		return "", err
+
 	}
 	//store templates in temporary memory
 	var tpl bytes.Buffer
@@ -131,13 +146,17 @@ func (m *Mail) buildHTMLMessage(msg Message) (string, error) {
 	// specified data object and writes the output to wr(io.writer= &tpl)
 	err = t.ExecuteTemplate(&tpl, "body", msg.DataMap)
 	if err != nil {
+		log.Println(err)
 		return "", err
+
 	}
 	formattedMessage := tpl.String()
 	//inline the css
 	formattedMessage, err = m.inlineCSS(formattedMessage)
 	if err != nil {
+		log.Println(err)
 		return "", err
+
 	}
 	return formattedMessage, nil
 }
@@ -151,11 +170,15 @@ func (m *Mail) inlineCSS(s string) (string, error) {
 	}
 	prem, err := premailer.NewPremailerFromString(s, &options)
 	if err != nil {
+		log.Println(err)
 		return "", err
+
 	}
 	html, err := prem.Transform()
 	if err != nil {
+		log.Println(err)
 		return "", err
+
 	}
 	return html, nil
 
