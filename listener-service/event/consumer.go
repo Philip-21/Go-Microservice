@@ -1,9 +1,11 @@
 package event
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -42,6 +44,8 @@ type Payload struct {
 
 // listens to the queue
 func (consumer *Consumer) Listen(topics []string) error {
+	//Channel opens a unique concurrent server channel,
+	// to process the bulk of AMQP messages.
 	ch, err := consumer.conn.Channel()
 	if err != nil {
 		return err
@@ -109,6 +113,29 @@ func handlePayload(payload Payload) {
 	}
 }
 
-func LogEvent(payload Payload) error {
+func LogEvent(entry Payload) error {
+	jsonData, _ := json.MarshalIndent(entry, "", "\t")
+
+	logServiceURL := "http://logger-service/log"
+
+	request, err := http.NewRequest("POST", logServiceURL, bytes.NewBuffer(jsonData))
+	if err != nil {
+
+		return err
+	}
+	request.Header.Set("Content-Type", "application/json")
+	//an http client
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+
+		return err
+	}
+	defer response.Body.Close()
+	//if status is accepted
+	if response.StatusCode != http.StatusAccepted {
+
+		return err
+	}
 	return nil
 }

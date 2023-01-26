@@ -56,6 +56,17 @@ services:
       FROM_NAME: "John Smith"
       FROM_ADDRESS: john.smith@example.com
 
+
+
+  listener-service:
+    build: 
+      context: ./../listener-service
+      dockerfile: ./../listener-service.dockerfile
+    restart: always
+
+    deploy:
+      mode: replicated
+      replicas: 1  
           
 
 
