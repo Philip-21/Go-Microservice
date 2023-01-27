@@ -9,7 +9,7 @@ COPY . /app
 
 WORKDIR /app
 
-RUN CGO_ENABLE=0 go build -o listenerApp ./cmd/api
+RUN CGO_ENABLE=0 go build -o listenerApp .
 
 RUN chmod +x /app/listenerApp
 
@@ -22,4 +22,4 @@ RUN mkdir /app
 
 COPY --from=builder /app/listenerApp /app
 
-CMD [ "/app/authApp"]
+CMD [ "/app/listenerApp"]
