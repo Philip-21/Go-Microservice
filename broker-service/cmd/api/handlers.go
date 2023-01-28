@@ -172,6 +172,14 @@ func (app *Config) sendMail(w http.ResponseWriter, msg MailPayload) {
 
 }
 
+// to handle logging and item and emmit an event to rabbit mq
+func (app *Config) LogEventViaRabit(w http.ResponseWriter, l LogPayload) {
+
+}
+func (app *Config) pushToQueue(name, msg string) error {
+	return nil
+}
+
 // this handler handles all request to display in the front-end and called by the javascript
 func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	var requestPayload RequestPayload
