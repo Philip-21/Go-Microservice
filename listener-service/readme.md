@@ -1,2 +1,1 @@
-listener service talks to rabbit mq which is  queing protocol server 
--it gets the request from the queue and sends request to the authentication service which logs the user in andtakes appropraite action based on the request
+The User makes a request to the broker  & pushes the request to the rabbitmq, the listener-service gets a request from the queue to either , authenticate, send an email, and log something, if a user tries to login it sends a request to the authentication service and takes action based on the result attempt

@@ -18,7 +18,6 @@ type Config struct {
 func main() {
 
 	log.Println("Starting authentication service")
-
 	// connect to db
 	conn := database.ConnectToDB()
 	if conn == nil {

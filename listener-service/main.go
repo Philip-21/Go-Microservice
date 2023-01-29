@@ -27,7 +27,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 	//watch the queue and consume events
 	err = consumer.Listen([]string{"log.INFO", "log.WARNING", "log.ERROR"})
 	if err != nil {
@@ -55,7 +54,6 @@ func connect() (*amqp.Connection, error) {
 			connection = c
 			break
 		}
-
 		if counts > 5 {
 			log.Println(err)
 			return nil, err

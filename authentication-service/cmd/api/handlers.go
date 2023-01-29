@@ -8,6 +8,32 @@ import (
 	"net/http"
 )
 
+// communictes with the logger service when someone succesfully authenticates
+// and sends the auth details  into mongoDb
+func (app *Config) logRequest(name, data string) error {
+	var entry struct {
+		Name string `json:"name"`
+		Data string `json:"data"`
+	}
+	entry.Name = name
+	entry.Data = data
+
+	jsonData, _ := json.MarshalIndent(entry, "", "\t")
+	logServiceURL := "http://logger-service/log"
+
+	request, err := http.NewRequest("POST", logServiceURL, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return err
+	}
+	client := &http.Client{}
+	_, err = client.Do(request)
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
+
 func (app *Config) Authenticate(w http.ResponseWriter, r *http.Request) {
 	//declare a variable that haa the same tags with the json
 	var requestPayload struct {
@@ -29,7 +55,7 @@ func (app *Config) Authenticate(w http.ResponseWriter, r *http.Request) {
 	if err != nil || !valid {
 		app.ErrorJSON(w, errors.New("Invalid Credentials"), http.StatusBadRequest)
 	}
-	// log authentication
+	// log authentication and send the logged details to logger service
 	err = app.logRequest("authentication", fmt.Sprintf("%s logged in", user.Email))
 	if err != nil {
 		app.ErrorJSON(w, err)
@@ -41,30 +67,4 @@ func (app *Config) Authenticate(w http.ResponseWriter, r *http.Request) {
 		Data:    user,
 	}
 	app.Writejson(w, http.StatusAccepted, payload)
-}
-
-// communictaes with the logger service when someone succesfully authenticates
-func (app *Config) logRequest(name, data string) error {
-	var entry struct {
-		Name string `json:"name"`
-		Data string `json:"data"`
-	}
-	entry.Name = name
-	entry.Data = data
-
-	jsonData, _ := json.MarshalIndent(entry, "", "\t")
-	logServiceURL := "http://logger-service/log"
-
-	request, err := http.NewRequest("POST", logServiceURL, bytes.NewBuffer(jsonData))
-	if err != nil {
-		return err
-	}
-	client := &http.Client{}
-	_, err = client.Do(request)
-	if err != nil {
-		return err
-	}
-
-	return nil
-
 }
