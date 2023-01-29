@@ -1,0 +1,1 @@
+###### An Authentication based Micro-Service Using different APi methods(rpc, GRPC and REST API's) in commmunicating between services 
