@@ -60,12 +60,10 @@ func main() {
 		Addr:    fmt.Sprintf(":%s", webPort),
 		Handler: app.routes(),
 	}
-
 	err = srv.ListenAndServe()
 	if err != nil {
 		log.Panic()
 	}
-
 }
 
 func (app *Config) rpcListen() error {

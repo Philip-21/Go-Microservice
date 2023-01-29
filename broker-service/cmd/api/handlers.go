@@ -1,11 +1,7 @@
 package main
 
 import (
-	"broker/event"
-	"bytes"
-	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 )
 
@@ -49,164 +45,6 @@ func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
 	_ = app.Writejson(w, http.StatusOK, payload)
 }
 
-// authenticate calls the authentication microservice and sends back the appropriate response
-func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
-	//create some json to send to the Authentication Microservice
-	jsonData, _ := json.MarshalIndent(a, "", "\t")
-
-	//call the Authentication service
-	request, err := http.NewRequest("POST", "http://authentication-service/authenticate", bytes.NewBuffer(jsonData)) //must be the same as the docker compose yml
-	if err != nil {
-		app.ErrorJSON(w, err)
-		return
-	}
-	client := &http.Client{}
-	response, err := client.Do(request)
-	if err != nil {
-		app.ErrorJSON(w, err)
-		return
-	}
-	defer response.Body.Close()
-
-	//make sure we get back the correct status code
-
-	if response.StatusCode == http.StatusUnauthorized {
-		app.ErrorJSON(w, errors.New("invalid credentials"))
-		return
-	} else if response.StatusCode != http.StatusAccepted {
-		app.ErrorJSON(w, errors.New("Error in Calling Auth Service"))
-		return
-	}
-
-	//create a variable We'll read response.body into
-	var jsonFromService jsonResponse
-
-	//decode the json from the Auth service
-	err = json.NewDecoder(response.Body).Decode(&jsonFromService)
-	if err != nil {
-		app.ErrorJSON(w, err)
-		return
-	}
-	if jsonFromService.Error {
-		app.ErrorJSON(w, err, http.StatusUnauthorized)
-		return
-	}
-
-	var payload jsonResponse
-	payload.Error = false
-	payload.Message = "Authenticated!"
-	payload.Data = jsonFromService.Data
-
-	///writes the actual data from the service
-	app.Writejson(w, http.StatusAccepted, payload)
-
-}
-
-/*func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
-	jsonData, _ := json.MarshalIndent(entry, "", "\t")
-
-	logServiceURL := "http://logger-service/log"
-
-	request, err := http.NewRequest("POST", logServiceURL, bytes.NewBuffer(jsonData))
-	if err != nil {
-		app.ErrorJSON(w, err)
-		return
-	}
-	request.Header.Set("Content-Type", "application/json")
-	//an http client
-	client := &http.Client{}
-	response, err := client.Do(request)
-	if err != nil {
-		app.ErrorJSON(w, err)
-		return
-	}
-	defer response.Body.Close()
-	//if status is accepted
-	if response.StatusCode != http.StatusAccepted {
-		app.ErrorJSON(w, err)
-		return
-	}
-	var payload jsonResponse
-	payload.Error = false
-	payload.Message = "Logged"
-
-	app.Writejson(w, http.StatusAccepted, payload)
-}*/
-
-func (app *Config) sendMail(w http.ResponseWriter, msg MailPayload) {
-	jsonData, _ := json.MarshalIndent(msg, "", "\t")
-
-	// call the mail service
-	mailServiceURL := "http://mail-service/send"
-
-	// post to mail service
-	request, err := http.NewRequest("POST", mailServiceURL, bytes.NewBuffer(jsonData))
-	if err != nil {
-		log.Println(err)
-		app.ErrorJSON(w, err)
-		return
-	}
-	request.Header.Set("Content-Type", "application/json")
-	client := &http.Client{}
-	response, err := client.Do(request)
-	if err != nil {
-		app.ErrorJSON(w, err)
-		log.Println(err)
-		return
-	}
-	defer response.Body.Close()
-
-	// make sure we get back the right status code
-	if response.StatusCode != http.StatusAccepted {
-		app.ErrorJSON(w, errors.New("error calling mail service"))
-		return
-	}
-	// send back json
-	var payload jsonResponse
-	payload.Error = false
-	payload.Message = "Message sent to " + msg.To
-
-	app.Writejson(w, http.StatusAccepted, payload)
-
-}
-
-// to handle logging and emmit an event to rabbit mq
-func (app *Config) LogEventViaRabit(w http.ResponseWriter, l LogPayload) {
-	err := app.PushToQueue(l.Name, l.Data)
-	if err != nil {
-		log.Println(err)
-		app.ErrorJSON(w, err)
-		return
-	}
-	//send back a jsn response
-	var payload jsonResponse
-	payload.Error = false
-	payload.Message = "Logged Via RabbitMQ"
-
-	app.Writejson(w, http.StatusAccepted, payload)
-}
-func (app *Config) PushToQueue(name, msg string) error {
-	emmiter, err := event.NewEventEmmitter(app.Rabbit)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	//create a payload to store in queue'
-	payload := LogPayload{
-		Name: name,
-		Data: msg,
-	}
-	j, _ := json.MarshalIndent(&payload, "", "\t")
-	//push the payload to queue
-	err = emmiter.Push(string(j), "Log.INFO")
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-
-	return nil
-}
-
 // this handler handles all request to display in the front-end and called by the javascript
 func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	var requestPayload RequestPayload
@@ -225,7 +63,7 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 		app.sendMail(w, requestPayload.Mail)
 	//from the Logger	to broker
 	case "log":
-		app.LogEventViaRabit(w, requestPayload.Log)
+		app.LogItemViaRPC(w, requestPayload.Log)
 	default:
 		app.ErrorJSON(w, errors.New("unknown Action"))
 	}

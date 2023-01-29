@@ -1,5 +1,5 @@
-// pushes events on the queue
-// send events from the client and pushes it on the queue
+// pushes events to the queue
+// gets events from the client and pushes it on the queue
 package event
 
 import (
