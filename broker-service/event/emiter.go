@@ -1,5 +1,5 @@
-//pushes events on the queue
-
+// pushes events on the queue
+// send events from the client and pushes it on the queue
 package event
 
 import (
@@ -7,6 +7,8 @@ import (
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
+
+///these functions will be used by the handlers
 
 type Emmitter struct {
 	connection *amqp.Connection

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"broker/event"
 	"bytes"
 	"encoding/json"
 	"errors"
@@ -82,12 +83,10 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 
 	//decode the json from the Auth service
 	err = json.NewDecoder(response.Body).Decode(&jsonFromService)
-
 	if err != nil {
 		app.ErrorJSON(w, err)
 		return
 	}
-
 	if jsonFromService.Error {
 		app.ErrorJSON(w, err, http.StatusUnauthorized)
 		return
@@ -102,7 +101,8 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 	app.Writejson(w, http.StatusAccepted, payload)
 
 }
-func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
+
+/*func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
 	jsonData, _ := json.MarshalIndent(entry, "", "\t")
 
 	logServiceURL := "http://logger-service/log"
@@ -131,7 +131,7 @@ func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
 	payload.Message = "Logged"
 
 	app.Writejson(w, http.StatusAccepted, payload)
-}
+}*/
 
 func (app *Config) sendMail(w http.ResponseWriter, msg MailPayload) {
 	jsonData, _ := json.MarshalIndent(msg, "", "\t")
@@ -146,13 +146,12 @@ func (app *Config) sendMail(w http.ResponseWriter, msg MailPayload) {
 		app.ErrorJSON(w, err)
 		return
 	}
-
 	request.Header.Set("Content-Type", "application/json")
-
 	client := &http.Client{}
 	response, err := client.Do(request)
 	if err != nil {
 		app.ErrorJSON(w, err)
+		log.Println(err)
 		return
 	}
 	defer response.Body.Close()
@@ -162,7 +161,6 @@ func (app *Config) sendMail(w http.ResponseWriter, msg MailPayload) {
 		app.ErrorJSON(w, errors.New("error calling mail service"))
 		return
 	}
-
 	// send back json
 	var payload jsonResponse
 	payload.Error = false
@@ -172,11 +170,40 @@ func (app *Config) sendMail(w http.ResponseWriter, msg MailPayload) {
 
 }
 
-// to handle logging and item and emmit an event to rabbit mq
+// to handle logging and emmit an event to rabbit mq
 func (app *Config) LogEventViaRabit(w http.ResponseWriter, l LogPayload) {
+	err := app.PushToQueue(l.Name, l.Data)
+	if err != nil {
+		log.Println(err)
+		app.ErrorJSON(w, err)
+		return
+	}
+	//send back a jsn response
+	var payload jsonResponse
+	payload.Error = false
+	payload.Message = "Logged Via RabbitMQ"
 
+	app.Writejson(w, http.StatusAccepted, payload)
 }
-func (app *Config) pushToQueue(name, msg string) error {
+func (app *Config) PushToQueue(name, msg string) error {
+	emmiter, err := event.NewEventEmmitter(app.Rabbit)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	//create a payload to store in queue'
+	payload := LogPayload{
+		Name: name,
+		Data: msg,
+	}
+	j, _ := json.MarshalIndent(&payload, "", "\t")
+	//push the payload to queue
+	err = emmiter.Push(string(j), "Log.INFO")
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
 	return nil
 }
 
@@ -188,15 +215,17 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 		app.ErrorJSON(w, err)
 		return
 	}
-
 	//taking action on the contents being received
 	switch requestPayload.Action {
+	//from authentication-service to broker
 	case "auth":
 		app.authenticate(w, requestPayload.Auth)
-	case "log":
-		app.logItem(w, requestPayload.Log)
+	//the mail service to broker
 	case "mail":
 		app.sendMail(w, requestPayload.Mail)
+	//from the Logger	to broker
+	case "log":
+		app.LogEventViaRabit(w, requestPayload.Log)
 	default:
 		app.ErrorJSON(w, errors.New("unknown Action"))
 	}
