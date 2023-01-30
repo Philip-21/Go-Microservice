@@ -18,4 +18,19 @@ type LogServer struct {
 
 func (l *LogServer) WriteLog(ctx context.Context, req *logs.LogRequest) (*logs.LogResponse, error) {
 	input := req.GetLogEntry()
+
+	//write a log
+	//create a log entry
+	Logentry := database.LogEntry{
+		Name: input.Name,
+		Data: input.Data,
+	}
+	err := l.Models.LogEntry.Insert(Logentry)
+	if err != nil {
+		res := &logs.LogResponse{Result: "failed"}
+		return res, err
+	}
+	//return Response
+	res := &logs.LogResponse{Result: "Logged"}
+	return res, nil
 }
