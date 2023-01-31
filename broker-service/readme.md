@@ -1,4 +1,5 @@
 #### The Broker Service processes each request sent by the frontend and sends a response back to it.
+it receives request from the client and sens to the logger service
 
 ###### Based on the function calls that sends to the logger-service , i pick to use any of these function that does the following  
 - The broker can send requests using Api's , it sends it to the logger service and  saves it on the logger service database then displays it in the frontend 

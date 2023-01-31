@@ -1,0 +1,31 @@
+//used to tell the tools the kind of source code to generate
+
+syntax = "proto3"; //our proto syntax
+
+//declare package name 
+package logs;
+
+option go_package = "/logs";
+
+//describe the informations to  be passed around
+// the numeric values rep the position
+message Log{
+      string name = 1;
+      string data = 2;
+}
+
+//performing log operation
+message LogRequest{
+      Log logEntry = 1;
+}
+
+message LogResponse{
+      string result = 1;
+}
+
+
+//define the services
+service LogService {
+      //this service will be available to grpc
+      rpc WriteLog(LogRequest) returns (LogResponse);
+}

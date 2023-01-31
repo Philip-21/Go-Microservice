@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-// calls the mail microservice and sends the result  back to the user
+// calls the mail microservice through this broker service and sends the result  back to the user
 // the mail service doesn't send details to the logger-service
 func (app *Config) sendMail(w http.ResponseWriter, msg MailPayload) {
 	jsonData, _ := json.MarshalIndent(msg, "", "\t")
