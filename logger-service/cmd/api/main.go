@@ -44,11 +44,9 @@ func main() {
 			panic(err)
 		}
 	}()
-
 	app := Config{
 		Models: database.New(client),
 	}
-
 	//register the rpc server(tells the app we are accepting rpc requests)
 	err = rpc.Register(new(RPCServer))
 	go app.rpcListen()
