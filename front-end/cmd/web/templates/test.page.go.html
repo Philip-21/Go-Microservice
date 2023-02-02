@@ -56,10 +56,10 @@
             .then((data) => {
                 sent.innerHTML ="empty post request";
                 received.innerHTML =JSON.stringify(data, undefined, 4); //formatin JSON
-                if (data.error) {
-                    console.log(data.message);
+                if (data.error) {//displays false error
+                    console.log(data.message); //displays the messae hit the broker
                 }else{
-                    output.innerHTML += `<br><strong>Response from broker service</strong>: ${data.message}`;
+                    output.innerHTML += `<br><strong>Response from broker service</strong>: ${data.message}`; //message hit the broker 
                 }
             })
             .catch((error) => {
@@ -147,6 +147,7 @@
             })        
         })
 
+        //Reference to main button
         let mailBtn = document.getElementById("mailBtn");
 
         mailBtn.addEventListener("click", function() {
@@ -185,13 +186,14 @@
                 output.innerHTML += "<br><br>Eror: " + error;
             })
         })
+        //Reference to GRPC button 
        let LogGbtn = document.getElementById("LogGbtn");
         logBtn.addEventListener("click", function() {
             const payload = {
                 action: "log",
                 log: { 
                     name: "event",
-                    data: "Log Grpc data",
+                    data: "Grpc data",
                 }
             }
             //Post headers

@@ -43,7 +43,7 @@ type Payload struct {
 }
 
 // communicates with the logger service when a User
-// sends a reply
+// sends a request and saves the request in the db
 func LogEvent(entry Payload) error {
 	jsonData, _ := json.MarshalIndent(entry, "", "\t")
 
@@ -57,6 +57,9 @@ func LogEvent(entry Payload) error {
 	request.Header.Set("Content-Type", "application/json")
 	//an http client
 	client := &http.Client{}
+	//Do sends an HTTP request and returns an HTTP response,
+	// following policy (such as redirects, cookies, auth)
+	//as configured on the client.
 	response, err := client.Do(request)
 	if err != nil {
 		log.Println(err)

@@ -9,7 +9,8 @@ type RequestPayload struct {
 	Action string      `json:"action"`
 	Auth   AuthPayload `json:"auth,omitempty"` //info needed to authenticate
 	Log    LogPayload  `json:"log,omitempty"`  //info needed by to show a user is logged in
-	Mail   MailPayload `json:"mail,omitempty"`
+	//LogGRPc LogPayload  `json:"loggrpc,omitempty"`
+	Mail MailPayload `json:"mail,omitempty"`
 }
 
 type MailPayload struct {
@@ -64,6 +65,11 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	//from the Logger	to broker
 	case "log":
 		app.LogItemViaRPC(w, requestPayload.Log)
+
+	//from the Rabbit-Mq to broker
+	case "queue":
+		app.LogEventViaRabit(w, requestPayload.Log)
+
 	default:
 		app.ErrorJSON(w, errors.New("unknown Action"))
 	}

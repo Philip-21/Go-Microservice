@@ -48,22 +48,9 @@ func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
 	app.Writejson(w, http.StatusAccepted, payload)
 }
 
-// to handle logging and pushing events to queue
-func (app *Config) LogEventViaRabit(w http.ResponseWriter, l LogPayload) {
-	err := app.PushToQueue(l.Name, l.Data)
-	if err != nil {
-		log.Println(err)
-		app.ErrorJSON(w, err)
-		return
-	}
-	//send back a jsn response
-	var payload jsonResponse
-	payload.Error = false
-	payload.Message = "Logged Via RabbitMQ"
-
-	app.Writejson(w, http.StatusAccepted, payload)
-}
+// does the main handling of queues
 func (app *Config) PushToQueue(name, msg string) error {
+	//create a queue
 	emmiter, err := event.NewEventEmmitter(app.Rabbit)
 	if err != nil {
 		log.Println(err)
@@ -83,6 +70,22 @@ func (app *Config) PushToQueue(name, msg string) error {
 	}
 
 	return nil
+}
+
+// to handle logging and pushing events to queue
+func (app *Config) LogEventViaRabit(w http.ResponseWriter, l LogPayload) {
+	err := app.PushToQueue(l.Name, l.Data)
+	if err != nil {
+		log.Println(err)
+		app.ErrorJSON(w, err)
+		return
+	}
+	//send back a jsn response
+	var payload jsonResponse
+	payload.Error = false
+	payload.Message = "Logged Via RabbitMQ"
+
+	app.Writejson(w, http.StatusAccepted, payload)
 }
 
 type RPCPayload struct {
