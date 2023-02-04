@@ -30,7 +30,6 @@ func main() {
 		DB:     conn,
 		Models: database.New(conn),
 	}
-
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),
 		Handler: app.Routes(),

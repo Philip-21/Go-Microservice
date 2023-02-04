@@ -10,7 +10,7 @@
                 <a id="authBrokerBtn" class="btn btn-outline-secondary" href="javascript:void(0);">Test Auth</a>
                 <a id="logBtn" class="btn btn-outline-secondary" href="javascript:void(0);">Test Log</a>
                 <a id="mailBtn" class="btn btn-outline-secondary" href="javascript:void(0);">Test Mail</a>
-                <a id="LogGbtn" class="btn btn-outline-secondary" href="javascript:void(0);">Test GRPC</a>
+                <a id="logGBtn" class="btn btn-outline-secondary" href="javascript:void(0);">Test gRPC log</a>
               
                 <div id="output" class="mt-5" style="outline: 1px solid silver; padding: 2em;">
                     <span class="text-muted">Output shows here...</span>
@@ -36,16 +36,17 @@
 
 {{define "js"}}
     <script>
-        //reference to BROKER BUTTON
-        let brokerBtn = document.getElementById("brokerBtn");
-       
         let output =document.getElementById("output");
         let sent = document.getElementById("payload");
         let received = document.getElementById("received");
+        let brokerBtn = document.getElementById("brokerBtn");
+        let authBrokerBtn = document.getElementById("authBrokerBtn");
+        let logBtn = document.getElementById("logBtn");
+        let logGBtn = document.getElementById("logGBtn");
 
+        //reference to BROKER BUTTON
         //a listener on the broker button that listens for clicks
         brokerBtn.addEventListener("click", function(){
-
             const body = {
                 //post an empty body
                 method: 'POST',
@@ -67,11 +68,7 @@
             })
         })
 
-       
            //reference to AUTH button
-        let authBrokerBtn = document.getElementById("authBrokerBtn")
-     
-
         authBrokerBtn.addEventListener("click", function() {//event listener listens or clicks and executes the function
             const payload ={
                 action:"auth", //what we expecting on the backend
@@ -80,19 +77,15 @@
                     email :"admin@example.com",
                     password :"verysecret",
                 }
-
             }
-
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-
             //body rep the html <body> in ref to the DOM ele dispalyed on a page
             const body ={
                 method :"POST",
                 body: JSON.stringify(payload),
                 headers: headers,
             }
-
             //request to the server and load the info on the web page
             fetch("http:\/\/localhost:8080/handle", body)
             .then((response) => response.json()) //convert response to json
@@ -105,14 +98,12 @@
                     output.innerHTML += `<br><strong>Response from broker service</strong>: ${data.message}`;
                 }
             })
-
             .catch((error) => {
                 output.innerHTML += "<br><br>Eror: " + error;
             })
-
         })
+
         //Reference to LOGGED button
-        let logBtn = document.getElementById("logBtn");
         logBtn.addEventListener("click", function() {
             const payload = {
                 action: "log",
@@ -130,7 +121,6 @@
                 body: JSON.stringify(payload),
                 headers: headers,
             }
-    
             fetch("http:\/\/localhost:8080/handle", body)
             .then((response) => response.json())
             .then((data) => {
@@ -147,11 +137,9 @@
             })        
         })
 
-        //Reference to main button
+        //Reference to mail button
         let mailBtn = document.getElementById("mailBtn");
-
         mailBtn.addEventListener("click", function() {
-
             const payload = {
                 action: "mail",
                 mail: {
@@ -161,16 +149,13 @@
                     message: "Hello world!",
                 }
             }
-    
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-    
             const body = {
                 method: 'POST',
                 body: JSON.stringify(payload),
                 headers: headers,
             }
-    
             fetch("http:\/\/localhost:8080/handle", body)
             .then((response) => response.json())
             .then((data) => {
@@ -186,9 +171,9 @@
                 output.innerHTML += "<br><br>Eror: " + error;
             })
         })
+
         //Reference to GRPC button 
-       let LogGbtn = document.getElementById("LogGbtn");
-        logBtn.addEventListener("click", function() {
+        logGBtn.addEventListener("click", function() {
             const payload = {
                 action: "log",
                 log: { 
@@ -199,13 +184,11 @@
             //Post headers
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-    
             const body = {
                 method: "POST",
                 body: JSON.stringify(payload),
                 headers: headers,
             }
-    
             fetch("http:\/\/localhost:8080/log-grpc", body)
             .then((response) => response.json())
             .then((data) => {

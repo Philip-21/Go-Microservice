@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-// The broker can send  requests using Api's and save it on the logger
+// The broker can send  requests using Rest Api's and save it on the logger
 // servcie database then displays it in the frontend
 func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
 	jsonData, _ := json.MarshalIndent(entry, "", "\t")

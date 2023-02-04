@@ -5,7 +5,6 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"net/rpc"
 	"time"
 
 	"google.golang.org/grpc"
@@ -15,34 +14,6 @@ import (
 type RPCPayload struct {
 	Name string
 	Data string
-}
-
-// Send requests using RPC and save into logger-Service database then displays result in the frontend
-func (app *Config) LogItemViaRPC(w http.ResponseWriter, l LogPayload) {
-	client, err := rpc.Dial("tcp", "logger-service:5001") //calls from the docker compose file
-	if err != nil {
-		log.Println(err)
-		app.ErrorJSON(w, err)
-		return
-	}
-	rpcpayload := RPCPayload{
-		Name: l.Name,
-		Data: l.Data,
-	}
-	//get a result call
-	var result string
-	//call the rpc server
-	err = client.Call("RPCServer.LogInfo", rpcpayload, &result)
-	if err != nil {
-		log.Println(err)
-		app.ErrorJSON(w, err)
-		return
-	}
-	payload := jsonResponse{
-		Error:   false,
-		Message: result,
-	}
-	app.Writejson(w, http.StatusAccepted, payload)
 }
 
 // sends request using GRPC connects through this broker-sevice
@@ -84,6 +55,6 @@ func (app *Config) LogViaGRPC(w http.ResponseWriter, r *http.Request) {
 	//send a response back
 	var payload jsonResponse
 	payload.Error = false
-	payload.Message = "logged"
+	payload.Message = "Logged Via Grpc"
 	app.Writejson(w, http.StatusAccepted, payload)
 }
