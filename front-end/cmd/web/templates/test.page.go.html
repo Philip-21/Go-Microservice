@@ -24,6 +24,7 @@
                     <pre id="payload"><span class="text-muted">Nothing sent yet...</span></pre>
                 </div>
             </div>
+
             <div class="col">
                 <h4 class="mt-5">Received</h4>
                 <div class="mt-1" style="outline: 1px solid silver; padding: 2em;">
@@ -43,13 +44,15 @@
         let authBrokerBtn = document.getElementById("authBrokerBtn");
         let logBtn = document.getElementById("logBtn");
         let logGBtn = document.getElementById("logGBtn");
+        let mailBtn = document.getElementById("mailBtn");
+        let logRpcBtn = document.getElementById("logRpcBtn")
 
         //reference to BROKER BUTTON
         //a listener on the broker button that listens for clicks
         brokerBtn.addEventListener("click", function(){
             const body = {
                 //post an empty body
-                method: 'POST',
+                method: 'POST', 
             }
          
             fetch("http:\/\/localhost:8080", body) //a standard way of parsin a url in go templates
@@ -70,11 +73,12 @@
 
            //reference to AUTH button
         authBrokerBtn.addEventListener("click", function() {//event listener listens or clicks and executes the function
+            const inputValue = inputField.value;
             const payload ={
                 action:"auth", //what we expecting on the backend
                 //data we are parsing
                 auth:{
-                    email :"admin@example.com",
+                    email :inputValue,
                     password :"verysecret",
                 }
             }
@@ -137,8 +141,8 @@
             })        
         })
 
+      
         //Reference to mail button
-        let mailBtn = document.getElementById("mailBtn");
         mailBtn.addEventListener("click", function() {
             const payload = {
                 action: "mail",
@@ -204,6 +208,49 @@
                 output.innerHTML += "<br><br>Eror: " + error;
             })        
         })
+
+
+            ///RPC 
+        logRpcBtn.addEventListener("click", function() {
+        sendForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const inputValue = document.getElementById("inputValue").value;
+            const payload = {
+            action: "log",
+            log: { //the log entry
+                name: "event",
+                data: inputValue,
+            }
+            }
+
+            //Post headers
+            const headers = new Headers();
+            headers.append("Content-Type", "application/json");
+
+            const body = {
+            method: "POST",
+            body: JSON.stringify(payload),
+            headers: headers,
+            }
+            fetch("http:\/\/localhost:8080/handle", body)
+            .then((response) => response.json())
+            .then((data) => {
+            sent.innerHTML = JSON.stringify(payload, undefined, 4);
+            received.innerHTML = JSON.stringify(data, undefined, 4);
+            if (data.error) {
+                output.innerHTML += `<br><strong>Error:</strong> ${data.message}`;
+            } else {
+                output.innerHTML += `<br><strong>Response from broker service</strong>: ${data.message}`;
+            }
+            })
+            .catch((error) => {
+            output.innerHTML += "<br><br>Eror: " + error;
+            });
+        });
+        });
+        
+       
 
     </script>
 {{end}}

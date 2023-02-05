@@ -4,8 +4,36 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"html/template"
+	"log"
 	"net/http"
 )
+
+func (app *Config) renderRpc(w http.ResponseWriter, r *http.Request) (RPCPayload, error) {
+	render := ".templates/rpc.gohtml"
+	t, err := template.New("rpc-html").ParseFiles(render)
+	if err != nil {
+		log.Println(err)
+		return RPCPayload{}, err
+	}
+	var tbf bytes.Buffer
+
+	err = r.ParseForm()
+	if err != nil {
+		log.Println(err)
+		log.Println("error in getting form")
+		return RPCPayload{}, err
+	}
+	data := RPCPayload{
+		Name: r.Form.Get("name"),
+		Data: r.Form.Get("data"),
+	}
+	err = t.ExecuteTemplate(&tbf, "rpc", data)
+	if err != nil {
+		return data, err
+	}
+	return data, nil
+}
 
 // authenticate calls the authentication microservice and sends back the appropriate response
 func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {

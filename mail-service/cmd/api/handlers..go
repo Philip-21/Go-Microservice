@@ -21,14 +21,12 @@ func (app *Config) SendMail(w http.ResponseWriter, r *http.Request) {
 		app.errorJSON(w, err)
 		return
 	}
-
 	msg := Message{
 		From:    requestPayload.From,
 		To:      requestPayload.To,
 		Subject: requestPayload.Subject,
 		Data:    requestPayload.Message,
 	}
-
 	err = app.Mailer.SendSMTPMessage(msg)
 	if err != nil {
 		log.Println(err)

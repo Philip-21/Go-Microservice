@@ -30,7 +30,6 @@ func render(w http.ResponseWriter, t string) {
 		"./cmd/web/templates/header.partial.go.html",
 		"./cmd/web/templates/footer.partial.go.html",
 	}
-
 	var templateSlice []string
 	templateSlice = append(templateSlice, fmt.Sprintf("./cmd/web/templates/%s", t))
 

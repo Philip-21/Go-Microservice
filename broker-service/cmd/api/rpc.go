@@ -14,10 +14,23 @@ func (app *Config) LogItemViaRPC(w http.ResponseWriter, l LogPayload) {
 		app.ErrorJSON(w, err)
 		return
 	}
+	var r *http.Request
+	err = r.ParseForm()
+	if err != nil {
+		log.Println("error in getting form")
+		return
+	}
+	// name := r.Form.Get("name")
+	// Data := r.Form.Get("data")
 	rpcpayload := RPCPayload{
 		Name: l.Name,
 		Data: l.Data,
 	}
+	// rpc, err := app.renderRpc(w, r)
+	// if err != nil {
+	// 	log.Println(err)
+	// 	return
+	// }
 	//get a result call
 	var result string
 	//call the rpc server

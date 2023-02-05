@@ -64,7 +64,7 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 		app.sendMail(w, requestPayload.Mail)
 	//from the Logger	to broker
 	case "log":
-		app.LogItemViaRPC(w, requestPayload.Log)
+		app.logItem(w, requestPayload.Log)
 
 	//from the Rabbit-Mq to broker
 	case "queue":
