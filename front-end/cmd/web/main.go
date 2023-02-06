@@ -14,6 +14,9 @@ func main() {
 		render(w, "test.page.go.html")
 	})
 
+	http.HandleFunc("/auth", func(w http.ResponseWriter, r *http.Request) {
+		render(w, "auth.page.go.html")
+	})
 	fmt.Println("Starting front end service on port ", portNumber)
 	log.Println("frontend started")
 	err := http.ListenAndServe(portNumber, nil)
