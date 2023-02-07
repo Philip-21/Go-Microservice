@@ -1,10 +1,38 @@
 package main
 
 import (
+	"bytes"
+	"html/template"
 	"log"
 	"net/http"
 	"net/rpc"
 )
+
+func (app *Config) renderRpc(w http.ResponseWriter, r *http.Request) (RPCPayload, error) {
+	render := ".templates/rpc.gohtml"
+	t, err := template.New("rpc-html").ParseFiles(render)
+	if err != nil {
+		log.Println(err)
+		return RPCPayload{}, err
+	}
+	var tbf bytes.Buffer
+
+	err = r.ParseForm()
+	if err != nil {
+		log.Println(err)
+		log.Println("error in getting form")
+		return RPCPayload{}, err
+	}
+	data := RPCPayload{
+		Name: r.Form.Get("name"),
+		Data: r.Form.Get("data"),
+	}
+	err = t.ExecuteTemplate(&tbf, "rpc", data)
+	if err != nil {
+		return data, err
+	}
+	return data, nil
+}
 
 // Send requests using RPC and save into logger-Service database then displays result in the frontend
 func (app *Config) LogItemViaRPC(w http.ResponseWriter, l LogPayload) {

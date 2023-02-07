@@ -7,6 +7,38 @@ import (
 	"net/http"
 )
 
+type RequestPayload struct {
+	Action string      `json:"action"`
+	Auth   AuthPayload `json:"auth,omitempty"` //info needed to authenticate
+	Log    LogPayload  `json:"log,omitempty"`  //info needed by to show a user is logged in
+	//LogGRPc LogPayload  `json:"loggrpc,omitempty"`
+	Mail MailPayload `json:"mail,omitempty"`
+}
+
+type MailPayload struct {
+	From    string `json:"from"`
+	To      string `json:"to"`
+	Subject string `json:"subject"`
+	Message string `json:"message"`
+}
+
+type AuthPayload struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type LogPayload struct {
+	Name string `json:"email"`
+	Data string `json:"data"`
+}
+
+// the output diplayed in the frontend
+type jsonResponse struct {
+	Error   bool   `json:"error"`
+	Message string `json:"message"`
+	Data    any    `json:"data,omitempty"` //used any data type  instead of an interface , cause im parsin  insmall values
+}
+
 // Read json
 func (app *Config) ReadJSON(w http.ResponseWriter, r *http.Request, data any) error {
 	//make limitation of the size of uploaded json file
