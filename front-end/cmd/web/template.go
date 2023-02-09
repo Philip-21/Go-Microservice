@@ -18,13 +18,13 @@ func renderAuth(w http.ResponseWriter, v string) error {
 		Email:    "",
 		Password: "",
 	}
-	render := ".templates/auth.gohtml"
+	render := "./cmd/web/templates/auth.page.go.html"
 	t, err := template.ParseFiles(render)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
-	err = t.Execute(w, data)
+	err = t.ExecuteTemplate(w, "auth", data)
 	if err != nil {
 		return err
 	}
