@@ -8,7 +8,7 @@
                 <hr>
                 <a id="brokerBtn" class="btn btn-outline-secondary" href="javascript:void(0);">Test Broker</a>
                 <a id="signupBtn" class="btn btn-outline-secondary" href="javascript:void(0);">Test SignUp</a>
-                <a id="authBrokerBtn" class="btn btn-outline-secondary" href="/auth">Test Auth</a>
+                <a id="authBrokerBtn" class="btn btn-outline-secondary" href="/auth;">Test Auth</a>
                 <a id="logBtn" class="btn btn-outline-secondary" href="javascript:void(0);">Test Log</a>
                 <a id="mailBtn" class="btn btn-outline-secondary" href="javascript:void(0);">Test Mail</a>
                 <a id="logGBtn" class="btn btn-outline-secondary" href="javascript:void(0);">Test gRPC log</a>
@@ -19,13 +19,22 @@
                 </div>
             </div>
         </div>
+
         <div class="row">
             <div class="col">
                 <h4 class="mt-5">Sent</h4>
                 <div class="mt-1" style="outline: 1px solid silver; padding: 2em;">
-                    <pre id="payload"><span class="text-muted">Nothing sent yet...</span></pre>
+                  <form id="sendForm">
+                    <div class="form-group">
+                      <label for="inputValue">Value:</label>
+                      <input type="text" class="form-control" id="inputValue">
+                    </div>
+                   <div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                   </div>
+                  </form>
                 </div>
-            </div>
+              </div>
 
             <div class="col">
                 <h4 class="mt-5">Received</h4>

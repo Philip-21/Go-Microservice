@@ -15,8 +15,9 @@ func main() {
 	})
 
 	http.HandleFunc("/auth", func(w http.ResponseWriter, r *http.Request) {
-		render(w, "auth.page.go.html")
+		renderAuth(w, "auth.page.go.html")
 	})
+
 	fmt.Println("Starting front end service on port ", portNumber)
 	log.Println("frontend started")
 	err := http.ListenAndServe(portNumber, nil)
@@ -32,6 +33,7 @@ func render(w http.ResponseWriter, t string) {
 		"./cmd/web/templates/base.layout.go.html",
 		"./cmd/web/templates/header.partial.go.html",
 		"./cmd/web/templates/footer.partial.go.html",
+		"./cmd/web/templates/auth.page.go.html",
 	}
 	var templateSlice []string
 	templateSlice = append(templateSlice, fmt.Sprintf("./cmd/web/templates/%s", t))
