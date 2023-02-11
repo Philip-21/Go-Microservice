@@ -5,12 +5,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // communictes with the logger service when someone succesfully authenticates
 // and sends the auth details  into mongoDb
-func (app *Config) logRequest(name, data string) error {
+func (app *Config) logAuth(name, data string) error {
 	var entry struct {
 		Name string `json:"name"`
 		Data string `json:"data"`
@@ -31,6 +34,31 @@ func (app *Config) logRequest(name, data string) error {
 		return err
 	}
 	return nil
+
+}
+
+func (app *Config) LogSignUp()
+
+func (app *Config) SignUp(w http.ResponseWriter, r *http.Request) {
+	var SignUp struct {
+		FirstName string `json:"firstname"`
+		LastName  string `json:"lastname"`
+		Email     string `json:"email"`
+		Password  string `json:"password"`
+	}
+
+	err := app.ReadJSON(w, r, &SignUp)
+	if err != nil {
+		app.ErrorJSON(w, err, http.StatusBadRequest)
+		return
+	}
+	hashPassword, _ := bcrypt.GenerateFromPassword([]byte(SignUp.Password), 8)
+	user, err := app.Models.User.CreateUser(SignUp.FirstName, SignUp.LastName, SignUp.Email, string(hashPassword))
+	if err != nil {
+		app.ErrorJSON(w, err, http.StatusBadRequest)
+		log.Println(err)
+		return
+	}
 
 }
 
@@ -56,7 +84,7 @@ func (app *Config) Authenticate(w http.ResponseWriter, r *http.Request) {
 		app.ErrorJSON(w, errors.New("Invalid Credentials"), http.StatusBadRequest)
 	}
 	// log authentication and send the logged details to logger service
-	err = app.logRequest("authentication", fmt.Sprintf("%s logged in", user.Email))
+	err = app.logAuth("authentication", fmt.Sprintf("%s logged in", user.Email))
 	if err != nil {
 		app.ErrorJSON(w, err)
 		return

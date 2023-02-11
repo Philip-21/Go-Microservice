@@ -10,7 +10,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (u *User) CreateUser() (*User, error) {
+func (u *User) CreateUser(firstname string, lastname string, email string, password string) (*User, error) {
 	ctx, Cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer Cancel()
 
@@ -21,7 +21,6 @@ func (u *User) CreateUser() (*User, error) {
 	    $1, $2, $3, $4, $5, $6) returning first_name, last_name, email, password
 	`
 	rows := db.QueryRowContext(ctx, query,
-
 		user.FirstName,
 		user.LastName,
 		user.Email,
