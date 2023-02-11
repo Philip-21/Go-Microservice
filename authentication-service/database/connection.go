@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"database/sql"
 	"log"
 	"os"
@@ -50,4 +51,36 @@ func ConnectToDB() *sql.DB {
 		time.Sleep(2 * time.Second) //waiting for 2sec each time
 		continue
 	}
+}
+
+func SeedDB(db *sql.DB) {
+	query := `CREATE TABLE IF NOT EXISTS users(
+		id Serial Primary key,
+		email character varying(225) NOT NULL,
+		first_name character varying(225) NOT NULL,
+		last_name character varying(225) NOT NULL, 
+		password character varying(225) NOT NULL,
+		user_active int default 0 NOT NULL,
+		created_at timestamp(6) NOT NULL,
+		updated_at timestamp(6) NOT NULL
+	) `
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	res, err := db.ExecContext(ctx, query)
+	if err != nil {
+		log.Printf("Error %s when creating table ", err)
+		return
+	}
+
+	rows, err := res.RowsAffected()
+	if err != nil {
+		log.Printf("Errors making rows affected", err)
+		return
+	}
+	log.Printf("Users table created table :%d", rows)
+	log.Println("Users table created")
+	return
+
 }

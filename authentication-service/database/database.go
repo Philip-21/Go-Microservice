@@ -10,6 +10,36 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+func (u *User) CreateUser() (*User, error) {
+	ctx, Cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer Cancel()
+
+	var user User
+	query :=
+		`Insert into users (first_name , last_name, email, password,  created_at , updated_at
+	   values
+	    $1, $2, $3, $4, $5, $6) returning first_name, last_name, email, password
+	`
+	rows := db.QueryRowContext(ctx, query,
+
+		user.FirstName,
+		user.LastName,
+		user.Email,
+		user.Password,
+		time.Now(),
+		time.Now())
+
+	err := rows.Scan(
+		&u.FirstName, &u.LastName, &u.Email, &u.Password,
+	)
+	if err != nil {
+		return nil, err
+	}
+	log.Println("User Created")
+	return &user, nil
+
+}
+
 // GetAll returns a slice of all users, sorted by last name
 func (u *User) GetAll() ([]*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
