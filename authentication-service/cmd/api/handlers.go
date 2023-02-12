@@ -37,13 +37,41 @@ func (app *Config) logAuth(name, data string) error {
 
 }
 
-func (app *Config) LogSignUp()
+func (app *Config) LogSignUp(name string, firstname string, lastname string, email string) error {
+	var dbentry struct {
+		Email     string `json:"email"`
+		EntryName string `json:"entryname"`
+		FirstName string `json:"firstname"`
+		LastName  string `json:"lastname"`
+	}
+	dbentry.EntryName = name
+	dbentry.Email = email
+	dbentry.FirstName = firstname
+	dbentry.LastName = lastname
+
+	Json, _ := json.MarshalIndent(dbentry, "", "\t")
+	logServiceUrl := "http://logger-service/log"
+
+	req, err := http.NewRequest("POST", logServiceUrl, bytes.NewBuffer(Json))
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	//an http client to transport the request to the logger service
+	client := &http.Client{}
+	_, err = client.Do(req)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
+}
 
 func (app *Config) SignUp(w http.ResponseWriter, r *http.Request) {
 	var SignUp struct {
+		Email     string `json:"email"`
 		FirstName string `json:"firstname"`
 		LastName  string `json:"lastname"`
-		Email     string `json:"email"`
 		Password  string `json:"password"`
 	}
 
@@ -59,6 +87,19 @@ func (app *Config) SignUp(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
+	//call the logger service and save to the mongo database
+	err = app.LogSignUp("signup", user.Email, user.FirstName, user.LastName)
+	if err != nil {
+		log.Println(err)
+		app.ErrorJSON(w, err)
+		return
+	}
+	payload := jsonResponse{
+		Error:   false,
+		Message: fmt.Sprintf("SignUp user %s", user.FirstName),
+		Data:    user,
+	}
+	app.Writejson(w, http.StatusAccepted, payload)
 
 }
 
