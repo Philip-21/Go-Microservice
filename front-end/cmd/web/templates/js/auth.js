@@ -8,7 +8,7 @@ const password = document.getElementById("password");
 SubmitBtn.addEventListener("click", function(event){
       event.preventDefault(); // prevent the form from submitting and reloading the page
       const inputemail = email.value;
-      const inputpassword = password.value
+      const inputpassword = password.value;
 
       const payload = {
         action : "auth",

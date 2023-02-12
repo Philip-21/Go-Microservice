@@ -42,25 +42,26 @@ func renderHome(w http.ResponseWriter, t string) {
 	if err := tmpl.Execute(w, nil); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+	log.Println("main page gotten")
 }
 
 func renderAuth(w http.ResponseWriter, v string) error {
-
 	render := "./cmd/web/templates/auth.page.go.html"
 	t, err := template.ParseFiles(render)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
-
 	data := AuthPayload{
 		Email:    "",
 		Password: "",
 	}
 	err = t.ExecuteTemplate(w, "auth", data)
 	if err != nil {
+		log.Printf("error in executing template %s", err)
 		return err
 	}
+	log.Println("auth page gotten")
 	return nil
 
 }
@@ -73,16 +74,18 @@ func renderSign(w http.ResponseWriter, r string) error {
 		return err
 	}
 	entry := SignUp{
-		Email:     "",
 		FirstName: "",
 		LastName:  "",
+		Email:     "",
 		Password:  "",
 	}
 
 	err = t.ExecuteTemplate(w, "signup", entry)
 	if err != nil {
+		log.Println("error in executing template", err)
 		return err
 	}
+	log.Println("SignUp page gotten")
 	return nil
 
 }
