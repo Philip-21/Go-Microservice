@@ -21,7 +21,12 @@ type MailPayload struct {
 	Subject string `json:"subject"`
 	Message string `json:"message"`
 }
-
+type SignUpPayload struct {
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+}
 type AuthPayload struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
