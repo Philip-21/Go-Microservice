@@ -34,7 +34,8 @@ SubmitBtn.addEventListener("click", function(event){
           if (data.error){
              output.innerHTML += `<br><strong>Error:</strong>${data.message}`
           }else{
-            output.innerHTML += `<br><strong>Response from broker service Email entered </strong>: ${data.email}`
+            output.innerHTML += `<br><strong>Response from broker service Email entered </strong>: ${data.email},
+          ${data.message}`
           }
       })
       .catch(error => {

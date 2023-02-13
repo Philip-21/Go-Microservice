@@ -40,7 +40,8 @@ SubmitBtn.addEventListener("click", function(event){
           if (data.error){
              output.innerHTML += `<br><strong>Error:</strong>${data.message}`
           }else{
-            output.innerHTML += `<br><strong>Response from authentication to broker service signup Successfuly </strong>: ${data.firstname}`
+            output.innerHTML += `<br><strong>Response from authentication to broker service signup Successfuly </strong>: ${data.firstname}
+            ${data.message}`
           }
       })
       .catch(error => {
