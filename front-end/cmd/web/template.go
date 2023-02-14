@@ -18,7 +18,7 @@ type SignUp struct {
 	Password  string `json:"password"`
 }
 
-func renderHome(w http.ResponseWriter, t string) {
+func (app *Config) renderHome(w http.ResponseWriter, t string) {
 
 	//gets a slice of strings the page requires
 	partials := []string{
@@ -45,7 +45,7 @@ func renderHome(w http.ResponseWriter, t string) {
 	log.Println("main page gotten")
 }
 
-func renderAuth(w http.ResponseWriter, v string) error {
+func (app *Config) renderAuth(w http.ResponseWriter, v string) error {
 	render := "./cmd/web/templates/auth.page.go.html"
 	t, err := template.ParseFiles(render)
 	if err != nil {
@@ -66,7 +66,7 @@ func renderAuth(w http.ResponseWriter, v string) error {
 
 }
 
-func renderSign(w http.ResponseWriter, r string) error {
+func (app *Config) renderSign(w http.ResponseWriter, r string) error {
 	render := "./cmd/web/templates/signup.page.go.html"
 	t, err := template.ParseFiles(render)
 	if err != nil {
