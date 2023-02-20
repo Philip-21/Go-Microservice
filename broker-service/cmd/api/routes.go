@@ -11,7 +11,8 @@ import (
 func (app *Config) routes() http.Handler {
 	mux := chi.NewRouter()
 
-	//cors is an http header that defines which origin a browser a browser is permitted to load resources
+	//cors is an http header that defines which origin a
+	//browser  is permitted to load resources
 	//specify who is allowed to connect
 	mux.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"https://*", "http://*"},

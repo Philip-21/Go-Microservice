@@ -66,15 +66,12 @@ func connect() (*amqp.Connection, error) {
 			connection = c
 			break
 		}
-
 		if counts > 5 {
 			log.Println(err)
 			return nil, err
 		}
 		//increase the delay
-
 		backOff = time.Duration(math.Pow(float64(counts), 2)) * time.Second //raising it to the power of 2
-
 		log.Println("Backing off....")
 		time.Sleep(backOff)
 		continue

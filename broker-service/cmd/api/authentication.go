@@ -68,7 +68,6 @@ func (app *Config) authenticate(w http.ResponseWriter, r *http.Request) {
 	defer response.Body.Close()
 
 	//make sure we get back the correct status code
-
 	if response.StatusCode == http.StatusUnauthorized {
 		app.ErrorJSON(w, errors.New("invalid credentials"))
 		return
@@ -136,7 +135,6 @@ func (app *Config) SignUp(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 
 	}
-
 	sign, err := app.SignUpTemplate(body, w, r)
 	if err != nil {
 		log.Println(err)
