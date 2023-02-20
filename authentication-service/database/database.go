@@ -16,9 +16,11 @@ func (u *User) CreateUser(firstname string, lastname string, email string, passw
 
 	var user User
 	query :=
-		`Insert into users (first_name , last_name, email, password,  created_at , updated_at
-	   values
-	    $1, $2, $3, $4, $5, $6) returning first_name, last_name, email, password
+		`Insert into users
+		(first_name , last_name, email, password,  created_at , updated_at
+	      values
+	      $1, $2, $3, $4, $5, $6) 
+	      returning first_name, last_name, email, password
 	`
 	rows := db.QueryRowContext(ctx, query,
 		user.FirstName,
@@ -77,7 +79,6 @@ func (u *User) GetAll() ([]*User, error) {
 
 		users = append(users, &user)
 	}
-
 	return users, nil
 }
 

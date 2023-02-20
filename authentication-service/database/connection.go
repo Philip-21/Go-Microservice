@@ -81,6 +81,5 @@ func SeedDB(db *sql.DB) {
 	}
 	log.Printf("Users table created table :%d", rows)
 	log.Println("Users table created")
-	return
 
 }

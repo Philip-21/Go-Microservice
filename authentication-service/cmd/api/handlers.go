@@ -81,6 +81,7 @@ func (app *Config) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	hashPassword, _ := bcrypt.GenerateFromPassword([]byte(SignUp.Password), 8)
+	//svae into postres database
 	user, err := app.Models.User.CreateUser(SignUp.FirstName, SignUp.LastName, SignUp.Email, string(hashPassword))
 	if err != nil {
 		app.ErrorJSON(w, err, http.StatusBadRequest)
