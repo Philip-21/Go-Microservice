@@ -73,7 +73,7 @@ services:
 
 
   postgres:
-    image: 'postgres:14.5'
+    image: 'postgres:14.2-alpine'
     ports:
       - "5432:5432" #5432 on the machine : 5432 in the docker container
     
