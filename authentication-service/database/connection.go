@@ -16,11 +16,13 @@ import (
 func OpenDB(dsn string) (*sql.DB, error) {
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {
+		log.Println("Cannot Open db ", err)
 		return nil, err
 	}
 	//verifies if a connection to the database is still alive, establishing a connection if necessary.
 	err = db.Ping()
 	if err != nil {
+		log.Println("Error in connection", err)
 		return nil, err
 	}
 	return db, nil
@@ -53,7 +55,7 @@ func ConnectToDB() *sql.DB {
 	}
 }
 
-func SeedDB(db *sql.DB) {
+func SeedDB(db *sql.DB) error {
 	query := `CREATE TABLE IF NOT EXISTS users(
 		id Serial Primary key,
 		email character varying(225) NOT NULL,
@@ -71,15 +73,20 @@ func SeedDB(db *sql.DB) {
 	res, err := db.ExecContext(ctx, query)
 	if err != nil {
 		log.Printf("Error %s when creating table ", err)
-		return
+		return err
 	}
 
 	rows, err := res.RowsAffected()
 	if err != nil {
 		log.Printf("Errors making rows affected", err)
-		return
+		return err
+	}
+	err = db.Ping()
+	if err != nil {
+		log.Printf("Error %s when pinging database\n", err)
 	}
 	log.Printf("Users table created table :%d", rows)
 	log.Println("Users table created")
+	return nil
 
 }

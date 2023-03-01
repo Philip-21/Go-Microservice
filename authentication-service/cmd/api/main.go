@@ -25,8 +25,8 @@ func main() {
 	}
 	log.Println("connected to db ")
 
-	database.SeedDB(conn)
-	log.Println("seeding database")
+	// database.SeedDB(conn)
+	// log.Println("seeding db completed")
 
 	// set up config
 	app := Config{

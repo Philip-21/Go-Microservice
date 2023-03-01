@@ -27,7 +27,7 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	//from authentication-service to broker
 	//login
 	case "auth":
-		app.authenticate(w, r)
+		app.authenticate(w, requestPayload.Auth)
 	//signup
 	case "signup":
 		app.SignUp(w, r)

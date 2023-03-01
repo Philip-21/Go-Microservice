@@ -69,9 +69,6 @@ services:
 
           
 
-
-
-
   postgres:
     image: 'postgres:14.2-alpine'
     ports:
