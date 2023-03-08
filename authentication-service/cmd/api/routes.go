@@ -24,6 +24,5 @@ func (app *Config) Routes() http.Handler {
 	router.Use(middleware.Heartbeat("/ping"))
 
 	router.Post("/authenticate", app.Authenticate)
-	router.Post("/signup", app.SignUp)
 	return router
 }

@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 // communictes with the logger service when someone succesfully authenticates
@@ -66,43 +64,6 @@ func (app *Config) LogSignUp(name string, firstname string, lastname string, ema
 		return err
 	}
 	return nil
-}
-
-func (app *Config) SignUp(w http.ResponseWriter, r *http.Request) {
-	var SignUp struct {
-		Email     string `json:"email"`
-		FirstName string `json:"firstname"`
-		LastName  string `json:"lastname"`
-		Password  string `json:"password"`
-	}
-
-	err := app.ReadJSON(w, r, &SignUp)
-	if err != nil {
-		app.ErrorJSON(w, err, http.StatusBadRequest)
-		return
-	}
-	hashPassword, _ := bcrypt.GenerateFromPassword([]byte(SignUp.Password), 8)
-	//svae into postres database
-	user, err := app.Models.User.CreateUser(SignUp.FirstName, SignUp.LastName, SignUp.Email, string(hashPassword))
-	if err != nil {
-		app.ErrorJSON(w, err, http.StatusBadRequest)
-		log.Println(err)
-		return
-	}
-	//call the logger service and save to the mongo database
-	err = app.LogSignUp("signup", user.Email, user.FirstName, user.LastName)
-	if err != nil {
-		log.Println(err)
-		app.ErrorJSON(w, err)
-		return
-	}
-	payload := jsonResponse{
-		Error:   false,
-		Message: fmt.Sprintf("SignUp user %s", user.FirstName),
-		Data:    user,
-	}
-	app.Writejson(w, http.StatusAccepted, payload)
-
 }
 
 func (app *Config) Authenticate(w http.ResponseWriter, r *http.Request) {
