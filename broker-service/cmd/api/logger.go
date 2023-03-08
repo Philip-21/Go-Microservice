@@ -36,7 +36,7 @@ func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
 	}
 	var payload jsonResponse
 	payload.Error = false
-	payload.Message = "Logged"
+	payload.Message = "Logged Via Api"
 
 	app.Writejson(w, http.StatusAccepted, payload)
 }

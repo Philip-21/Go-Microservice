@@ -10,9 +10,9 @@ import (
 type RequestPayload struct {
 	Action string      `json:"action"`
 	Auth   AuthPayload `json:"auth,omitempty"` //info needed to authenticate
-	Log    LogPayload  `json:"log,omitempty"`  //info needed by to show a user is logged in
-	//LogGRPc LogPayload  `json:"loggrpc,omitempty"`
-	Mail MailPayload `json:"mail,omitempty"`
+	Log    LogPayload  `json:"log,omitempty"`  //info needed by to show a user is logged by a a particular Api
+	LogRPc LogPayload  `json:"rpc,omitempty"`
+	Mail   MailPayload `json:"mail,omitempty"`
 }
 
 type MailPayload struct {

@@ -32,11 +32,24 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	//the mail service to broker
 	case "mail":
 		app.sendMail(w, requestPayload.Mail)
-	//from the Logger	to broker
+	/*
+		from the Logger to the broker based on Api Request
+		either grpc or Rest
+		--------------For grpc----------------,
+		the grpc handles the same action as REST Based on  Protocol buffers
+		for transmitting requests
+		for Grpc , the Reqeust is Called based on the button clicked ,
+		based on the requestPayload ,the RestApi handles the reqeust  from the client then
+		calls the grpc server to execute the request and send a response back to the to the user.
+		it calls the LogGRpc function which does the grpc operations to handle the request and submit a response
+		which is sent back in json format to the user
+	*/
 	case "log":
 		app.logItem(w, requestPayload.Log)
-
-	//from the Rabbit-Mq to broker
+	//handles request from the client using RestApi , calls the
+	//the Rpc to handle reuest and returns a response back in json
+	case "rpc":
+		app.LogItemViaRPC(w, requestPayload.LogRPc)
 	case "queue":
 		app.LogEventViaRabit(w, requestPayload.Log)
 
