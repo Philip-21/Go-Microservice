@@ -33,37 +33,6 @@ func (app *Config) logAuth(name, data string) error {
 	}
 	log.Println("Saved  details into Mongo service ")
 	return nil
-
-}
-
-func (app *Config) LogSignUp(name string, firstname string, lastname string, email string) error {
-	var dbentry struct {
-		Email     string `json:"email"`
-		EntryName string `json:"entryname"`
-		FirstName string `json:"firstname"`
-		LastName  string `json:"lastname"`
-	}
-	dbentry.EntryName = name
-	dbentry.Email = email
-	dbentry.FirstName = firstname
-	dbentry.LastName = lastname
-
-	Json, _ := json.MarshalIndent(dbentry, "", "\t")
-	logServiceUrl := "http://logger-service/log"
-
-	req, err := http.NewRequest("POST", logServiceUrl, bytes.NewBuffer(Json))
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	//an http client to transport the request to the logger service
-	client := &http.Client{}
-	_, err = client.Do(req)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	return nil
 }
 
 func (app *Config) Authenticate(w http.ResponseWriter, r *http.Request) {
