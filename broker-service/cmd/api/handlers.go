@@ -28,9 +28,7 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	//login
 	case "auth":
 		app.authenticate(w, requestPayload.Auth)
-	//signup
-	case "signup":
-		app.SignUp(w, r)
+
 	//the mail service to broker
 	case "mail":
 		app.sendMail(w, requestPayload.Mail)
