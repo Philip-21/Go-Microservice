@@ -28,12 +28,12 @@ func (r *RPCServer) LogInfo(payload RPCPayload, resp *string) error {
 		CreatedAt: time.Now(),
 	})
 	if err != nil {
-		log.Println("Error writing t mongo", err)
+		log.Println("Error writing to mongo", err)
 		return err
 	}
 	//a pointer to the string to send a message back to the
 	//person who called it
-	*resp = "Processed payload Via RPC:" + payload.Name
+	*resp = "Logged Via RPC:" + payload.Name
 	return nil
 }
 
