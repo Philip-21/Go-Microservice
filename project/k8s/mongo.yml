@@ -1,0 +1,56 @@
+#Deployent file 
+apiVersion: apps/v1
+kind: Deployment 
+metadata:
+  name: mongo
+#spec is a key that is used to define the desired state of a Kubernetes resource, 
+#such as a Pod, Deployment, Service, or ConfigMap.
+#The spec key typically contains nested fields that define the specific properties and configuration of the resource. 
+spec:  
+  replicas: 1
+  selector:
+   matchlabels:
+    app: mongo   
+  template: #Templates combine the content of multiple YAML files into a single pipeline.
+    metadata:
+      labels:
+       app: mongo  
+    spec:
+      containers:
+      - name: mongo
+        image: "mongo:4.2.17-bionic"  
+        #lower Limit and upper Limit for Both memory and CPU 
+        #These values are used by Kubernetes to make scheduling decisions and ensure that containers have enough resources to run, 
+        #while also preventing them from using too much resources and 
+        #impacting the performance of other containers running on the same node.
+        resources: 
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"  
+        env:
+          - name: MONGO_INITDB_DATABASE   
+            value: "logs"
+          - name: MONGO_INITDB_ROOT_USERNAME
+            value: "admin"
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            value: "password"
+        ports: 
+          - containerPort: 27017
+---
+
+#define the service file associated for the deployment
+apiVersion: v1 
+kind: service
+metadata: 
+   name: mongo
+spec:
+   selector:
+      name: mongo   
+   ports: 
+      - protocol: TCP
+        name: main-port
+        port: 27017      
+        targetPort: 27017    #target port in the container
