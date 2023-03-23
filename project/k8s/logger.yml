@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: logger-service
-        image: "tsawler/logger-service:1.0.1"
+        image: "philip/logger-service:1.0.1"
         resources:
           requests:
             memory: "64Mi"

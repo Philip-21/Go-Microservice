@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: mailer-service
-        image: "tsawler/mail-service:1.0.0"
+        image: "philip/mail-service:1.0.0"
         resources:
           requests:
             memory: "64Mi"

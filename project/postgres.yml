@@ -1,0 +1,18 @@
+#Running pg instance Locally 
+services:
+  postgres:
+    image: 'postgres:14.2-alpine'
+    ports:
+      - "5432:5432" #5432 on the machine : 5432 in the docker container
+    
+    restart: "always"  
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: philippians
+      POSTGRES_DB: postgres
+    #volumes set for data to persist
+    volumes:
+      - ./db-data/postgres/:/var/lib/postgresql/data/

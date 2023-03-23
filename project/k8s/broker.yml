@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: broker-service
-        image: "tsawler/broker-service:1.0.1"
+        image: "philip/broker-service:1.0.1"
         resources:
           requests:
             memory: "64Mi"

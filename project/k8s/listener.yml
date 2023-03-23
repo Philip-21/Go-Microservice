@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: listener-service
-        image: "tsawler/listener-service:1.0.0"
+        image: "philip/listener-service:1.0.0"
         resources:
           requests:
             memory: "64Mi"
