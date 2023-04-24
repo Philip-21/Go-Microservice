@@ -1,1 +1,1 @@
-###### An Mini Micro-Service Web app that uses different APi methods(rpc, GRPC and REST API's) in commmunicating between services.
+## A Micro-Service that uses different protocols rpc, GRPC , REST API's and Queueing Systems in communicating between services.
