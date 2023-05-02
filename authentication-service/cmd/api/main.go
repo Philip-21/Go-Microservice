@@ -2,16 +2,17 @@ package main
 
 import (
 	"authentication/database"
-	"database/sql"
+	
 	"fmt"
 	"log"
 	"net/http"
+	"gorm.io/gorm"
 )
 
 const webPort = "80"
 
 type Config struct {
-	DB     *sql.DB
+	DB     *gorm.DB
 	Models database.Models
 }
 
@@ -25,8 +26,6 @@ func main() {
 	}
 	log.Println("connected to db ")
 
-	// database.SeedDB(conn)
-	// log.Println("seeding db completed")
 
 	// set up config
 	app := Config{
