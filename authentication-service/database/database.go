@@ -11,104 +11,44 @@ import (
 )
 
 func (u *User) CreateUser(firstname string, lastname string, email string, password string) (*User, error) {
-	ctx, Cancel := context.WithTimeout(context.Background(), dbTimeout)
-	defer Cancel()
+	query :=
+		`INSERT INTO users
+		(first_name, last_name, email, password, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?)
+		RETURNING id, first_name, last_name, email, password, created_at, updated_at`
 
 	var user User
-	query :=
-		`Insert into users
-		(first_name , last_name, email, password,  created_at , updated_at
-	      values
-	      $1, $2, $3, $4, $5, $6) 
-	      returning first_name, last_name, email, password
-	`
-	rows := db.QueryRowContext(ctx, query,
-		user.FirstName,
-		user.LastName,
-		user.Email,
-		user.Password,
-		time.Now(),
-		time.Now())
-
-	err := rows.Scan(
-		&u.FirstName, &u.LastName, &u.Email, &u.Password,
-	)
-	if err != nil {
+	//executing raw queries with gorm
+	if err := db.Raw(query, firstname, lastname, email, password, time.Now(), time.Now()).Scan(&user).Error; err != nil {
 		return nil, err
 	}
+
 	log.Println("User Created")
 	return &user, nil
-
 }
+
 
 // GetAll returns a slice of all users, sorted by last name
 func (u *User) GetAll() ([]*User, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
-	defer cancel()
-
-	query := `select id, email, first_name, last_name, password, user_active, created_at, updated_at
-	from users order by last_name`
-
-	rows, err := db.QueryContext(ctx, query)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
 	var users []*User
-
-	//Next prepares the next result row for reading with the Scan method. It returns true on success,
-	// or false if there is no next result row or an error happened while preparing it.
-
-	for rows.Next() {
-		var user User
-		err := rows.Scan(
-			&user.ID,
-			&user.Email,
-			&user.FirstName,
-			&user.LastName,
-			&user.Password,
-			&user.Active,
-			&user.CreatedAt,
-			&user.UpdatedAt,
-		)
-		if err != nil {
-			log.Println("Error scanning", err)
-			return nil, err
-		}
-
-		users = append(users, &user)
+	if err := db.Order("last_name").Find(&users).Error; err != nil {
+		return nil, err
 	}
 	return users, nil
 }
 
+
+// GetByEmail returns one user by email
 // GetByEmail returns one user by email
 func (u *User) GetByEmail(email string) (*User, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
-	defer cancel()
-
-	query := `select id, email, first_name, last_name, password, user_active, created_at, updated_at from users where email = $1`
-
 	var user User
-	row := db.QueryRowContext(ctx, query, email)
-
-	err := row.Scan(
-		&user.ID,
-		&user.Email,
-		&user.FirstName,
-		&user.LastName,
-		&user.Password,
-		&user.Active,
-		&user.CreatedAt,
-		&user.UpdatedAt,
-	)
-
+	err := db.Where("email = ?", email).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
-
 	return &user, nil
 }
+
 
 // GetOne returns one user by id
 func (u *User) GetOne(id int) (*User, error) {
