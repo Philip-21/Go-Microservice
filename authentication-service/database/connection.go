@@ -1,26 +1,30 @@
 package database
 
 import (
-	"context"
-	"database/sql"
+
 	"log"
 	"os"
 	"time"
 
-	_ "github.com/jackc/pgconn"
-	_ "github.com/jackc/pgx/v4"
-	_ "github.com/jackc/pgx/v4/stdlib"
+	
+	"gorm.io/gorm"
+	"gorm.io/driver/postgres"
 )
 
 // opens db connection
-func OpenDB(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("pgx", dsn)
+func OpenDB(dsn string) (*gorm.DB, error) {
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Println("Cannot Open db ", err)
 		return nil, err
 	}
 	//verifies if a connection to the database is still alive, establishing a connection if necessary.
-	err = db.Ping()
+	sqlDB, err := db.DB()
+	if err !=nil {
+		log.Println("error in getting sql")
+	}
+	
+	err = sqlDB.Ping()
 	if err != nil {
 		log.Println("Error in connection", err)
 		return nil, err
@@ -31,7 +35,7 @@ func OpenDB(dsn string) (*sql.DB, error) {
 var counts int64
 
 // connects to the database properly
-func ConnectToDB() *sql.DB {
+func ConnectToDB() *gorm.DB {
 	dsn := os.Getenv("DSN") //DSN is gotten from the docker compose yml file in auth service
 	//an infinite for loop to connect to the database
 	for {
@@ -53,40 +57,4 @@ func ConnectToDB() *sql.DB {
 		time.Sleep(2 * time.Second) //waiting for 2sec each time
 		continue
 	}
-}
-
-func SeedDB(db *sql.DB) error {
-	query := `CREATE TABLE IF NOT EXISTS users(
-		id Serial Primary key,
-		email character varying(225) NOT NULL,
-		first_name character varying(225) NOT NULL,
-		last_name character varying(225) NOT NULL, 
-		password character varying(225) NOT NULL,
-		user_active int default 0 NOT NULL,
-		created_at timestamp(6) NOT NULL,
-		updated_at timestamp(6) NOT NULL
-	) `
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	res, err := db.ExecContext(ctx, query)
-	if err != nil {
-		log.Printf("Error %s when creating table ", err)
-		return err
-	}
-
-	rows, err := res.RowsAffected()
-	if err != nil {
-		log.Printf("Errors making rows affected", err)
-		return err
-	}
-	err = db.Ping()
-	if err != nil {
-		log.Printf("Error %s when pinging database\n", err)
-	}
-	log.Printf("Users table created table :%d", rows)
-	log.Println("Users table created")
-	return nil
-
 }
