@@ -18,6 +18,11 @@ func OpenDB(dsn string) (*gorm.DB, error) {
 		log.Println("Cannot Open db ", err)
 		return nil, err
 	}
+	err = db.AutoMigrate(&User{})
+	if err !=nil{
+		log.Println("Error in Migrations")
+	}
+	log.Println("migrations successful")
 	//verifies if a connection to the database is still alive, establishing a connection if necessary.
 	sqlDB, err := db.DB()
 	if err !=nil {
