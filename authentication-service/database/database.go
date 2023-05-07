@@ -1,8 +1,6 @@
 package database
 
 import (
-	"context"
-
 	"errors"
 	"log"
 	"time"
@@ -27,7 +25,6 @@ func (u *User) CreateUser(firstname string, lastname string, email string, passw
 	return &user, nil
 }
 
-
 // GetAll returns a slice of all users, sorted by last name
 func (u *User) GetAll() ([]*User, error) {
 	var users []*User
@@ -36,7 +33,6 @@ func (u *User) GetAll() ([]*User, error) {
 	}
 	return users, nil
 }
-
 
 // GetByEmail returns one user by email
 // GetByEmail returns one user by email
@@ -49,121 +45,62 @@ func (u *User) GetByEmail(email string) (*User, error) {
 	return &user, nil
 }
 
-
 // GetOne returns one user by id
 func (u *User) GetOne(id int) (*User, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
-	defer cancel()
-
-	query := `select id, email, first_name, last_name, password, user_active, created_at, updated_at from users where id = $1`
-
 	var user User
-	row := db.QueryRowContext(ctx, query, id)
-
-	err := row.Scan(
-		&user.ID,
-		&user.Email,
-		&user.FirstName,
-		&user.LastName,
-		&user.Password,
-		&user.Active,
-		&user.CreatedAt,
-		&user.UpdatedAt,
-	)
-
-	if err != nil {
+	if err := db.First(&user, id).Error; err != nil {
 		return nil, err
 	}
-
 	return &user, nil
 }
 
 // Update updates one user in the database, using the information
 // stored in the receiver u
 func (u *User) Update() error {
-	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
-	defer cancel()
-
-	stmt := `update users set
-		email = $1,
-		first_name = $2,
-		last_name = $3,
-		user_active = $4,
-		updated_at = $5
-		where id = $6
-	`
-
-	_, err := db.ExecContext(ctx, stmt,
-		u.Email,
-		u.FirstName,
-		u.LastName,
-		u.Active,
-		time.Now(),
-		u.ID,
-	)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return db.Model(&User{}).Where("id = ?", u.ID).Updates(User{
+		Email:     u.Email,
+		FirstName: u.FirstName,
+		LastName:  u.LastName,
+		Active:    u.Active,
+		UpdatedAt: time.Now(),
+	}).Error
 }
 
 // Delete deletes one user from the database, by User.ID
 func (u *User) Delete() error {
-	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
-	defer cancel()
-
-	stmt := `delete from users where id = $1`
-
-	_, err := db.ExecContext(ctx, stmt, u.ID)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return db.Delete(&User{}, u.ID).Error
 }
 
 // DeleteByID deletes one user from the database, by ID
 func (u *User) DeleteByID(id int) error {
-	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
-	defer cancel()
-
-	stmt := `delete from users where id = $1`
-
-	_, err := db.ExecContext(ctx, stmt, id)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return db.Delete(&User{}, id).Error
 }
 
 // Insert inserts a new user into the database, and returns the ID of the newly inserted row
 func (u *User) Insert(user User) (int, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
-	defer cancel()
-
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), 12)
 	if err != nil {
 		return 0, err
 	}
 
+	// create a new User object with the hashed password
+	newUser := &User{
+		Email:     user.Email,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Password:  string(hashedPassword),
+		Active:    user.Active,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	// insert the new user into the database using a raw SQL query
+	result := db.Raw("INSERT INTO users (email, first_name, last_name, password, user_active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id",
+		newUser.Email, newUser.FirstName, newUser.LastName, newUser.Password, newUser.Active, newUser.CreatedAt, newUser.UpdatedAt).Row()
+
+	// get the new user's ID
 	var newID int
-	stmt := `insert into users (email, first_name, last_name, password, user_active, created_at, updated_at)
-		values ($1, $2, $3, $4, $5, $6, $7) returning id`
-
-	err = db.QueryRowContext(ctx, stmt,
-		user.Email,
-		user.FirstName,
-		user.LastName,
-		hashedPassword,
-		user.Active,
-		time.Now(),
-		time.Now(),
-	).Scan(&newID)
-
-	if err != nil {
+	if err := result.Scan(&newID); err != nil {
 		return 0, err
 	}
 
@@ -172,17 +109,14 @@ func (u *User) Insert(user User) (int, error) {
 
 // ResetPassword is the method we will use to change a user's password.
 func (u *User) ResetPassword(password string) error {
-	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
-	defer cancel()
-
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 	if err != nil {
 		return err
 	}
 
-	stmt := `update users set password = $1 where id = $2`
-	_, err = db.ExecContext(ctx, stmt, hashedPassword, u.ID)
-	if err != nil {
+	// update the user's password using a raw SQL query
+	stmt := "UPDATE users SET password = ? WHERE id = ?"
+	if err := db.Exec(stmt, string(hashedPassword), u.ID).Error; err != nil {
 		return err
 	}
 
